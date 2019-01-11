@@ -49,6 +49,21 @@ namespace LuaFramework {
         public static SoundManager GetSoundManager() {
             return AppFacade.Instance.GetManager<SoundManager>(ManagerName.Sound);
         }
+        /// <summary>
+        /// Lua管理器
+        /// </summary>
+        public static LuaManager GetLuaManager()
+        {
+            return AppFacade.Instance.GetManager<LuaManager>(ManagerName.Lua);
+        }
+
+        /// <summary>
+        /// UI管理器 
+        /// </summary>
+        public static UIManager GetUIManager()
+        {
+            return AppFacade.Instance.GetManager<UIManager>(ManagerName.UI);
+        }
 
 
         public static Action Action(LuaFunction func) {

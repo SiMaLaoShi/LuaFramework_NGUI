@@ -12,9 +12,11 @@ local print_r = require "3rd/sproto/print_r"
 
 require "Common/define"
 require "Common/functions"
+require ("Logic.GameDefine")
 
 require "Logic/LuaClass"
 require "Logic/CtrlManager"
+require ("Logic.UIManager")
 
 require "Controller/PromptCtrl"
 
@@ -28,35 +30,41 @@ local gameObject;
 local WWW = UnityEngine.WWW;
 
 function Game.InitViewPanels()
-	for i = 1, #PanelNames do
-		require ("View/"..tostring(PanelNames[i]))
-	end
+	-- for i = 1, #PanelNames do
+	-- 	require ("View/"..tostring(PanelNames[i]))
+	-- end
+end
+
+function Game.InitOK()
+    print("游戏初始化")
+    UIManager.CreateUISync(UIConfig.UILogin,false)
 end
 
 --初始化完成，发送链接服务器信息--
 function Game.OnInitOK()
-    AppConst.SocketPort = 2012;
-    AppConst.SocketAddress = "127.0.0.1";
-    networkMgr:SendConnect();
+    -- AppConst.SocketPort = 2012;
+    -- AppConst.SocketAddress = "127.0.0.1";
+    -- networkMgr:SendConnect();
 
-    --注册LuaView--
-    this.InitViewPanels();
+    -- --注册LuaView--
+    -- this.InitViewPanels();
 
-    --测试第三方库功能--
-    this.test_class_func();
-    this.test_pblua_func();
-    this.test_cjson_func();
-    this.test_pbc_func();
-    this.test_lpeg_func();
-    this.test_sproto_func();
-    coroutine.start(this.test_coroutine);
+    -- --测试第三方库功能--
+    -- this.test_class_func();
+    -- this.test_pblua_func();
+    -- this.test_cjson_func();
+    -- this.test_pbc_func();
+    -- this.test_lpeg_func();
+    -- this.test_sproto_func();
+    -- coroutine.start(this.test_coroutine);
 
-    CtrlManager.Init();
-    local ctrl = CtrlManager.GetCtrl(CtrlNames.Prompt);
-    if ctrl ~= nil and AppConst.ExampleMode == 1 then
-        ctrl:Awake();
-    end
-    logWarn('LuaFramework InitOK--->>>');
+    -- CtrlManager.Init();
+    -- local ctrl = CtrlManager.GetCtrl(CtrlNames.Prompt);
+    -- if ctrl ~= nil and AppConst.ExampleMode == 1 then
+    --     ctrl:Awake();
+    -- end
+    -- logWarn('LuaFramework InitOK--->>>');
+    print("Game OnInitOk")
 end
 
 --测试协同--

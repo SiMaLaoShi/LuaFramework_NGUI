@@ -12,7 +12,8 @@ public static class CustomSettings
 {
     public static string FrameworkPath = AppConst.FrameworkRoot;
     public static string saveDir = FrameworkPath + "/ToLua/Source/Generate/";
-    public static string luaDir = FrameworkPath + "/Lua/";
+    //public static string luaDir = FrameworkPath + "/Lua/";
+    public static string luaDir = "Lua/";
     public static string toluaBaseType = FrameworkPath + "/ToLua/BaseType/";
 	public static string baseLuaDir = FrameworkPath + "/ToLua/Lua";
 	public static string injectionFilesPath = Application.dataPath + "/ToLua/Injection/";
@@ -172,7 +173,12 @@ public static class CustomSettings
         _GT(typeof(TimerManager)),
         _GT(typeof(ThreadManager)),
         _GT(typeof(NetworkManager)),
-        _GT(typeof(ResourceManager)),		  
+        _GT(typeof(ResourceManager)),
+        _GT(typeof(UIManager)),	
+        _GT(typeof(UIBase)),	
+        _GT(typeof(SubUIBase)),
+        _GT(typeof(LuaUIEventListener)),
+
     };
 
     public static List<Type> dynamicList = new List<Type>()

@@ -25,6 +25,7 @@ namespace LuaFramework {
             if (AppConst.ExampleMode) {
                 InitGui();
             }
+            InitUIRoot();
             DontDestroyOnLoad(gameObject);  //防止销毁自己
 
             CheckExtractResource(); //释放资源
@@ -35,7 +36,8 @@ namespace LuaFramework {
         /// <summary>
         /// 初始化GUI
         /// </summary>
-        public void InitGui() {
+        public void InitGui()
+        {
             string name = "GUI";
             GameObject gui = GameObject.Find(name);
             if (gui != null) return;
@@ -44,6 +46,16 @@ namespace LuaFramework {
             gui = Instantiate(prefab) as GameObject;
             gui.name = name;
         }
+
+        public void InitUIRoot()
+        {
+            GameObject prefab = Util.LoadPrefab(AppConst.GUIROOT);
+            GameObject gui = Instantiate(prefab) as GameObject;
+            gui.name = "UI Root";
+            var uiManager = LuaHelper.GetUIManager();
+            uiManager.InitUIManager(gui);
+        }
+
 
         /// <summary>
         /// 释放资源
@@ -239,13 +251,14 @@ namespace LuaFramework {
         /// </summary>
         public void OnResourceInited() {
             LuaManager.InitStart();
+            
             LuaManager.DoFile("Logic/Game");            //加载游戏
             LuaManager.DoFile("Logic/Network");         //加载网络
             NetManager.OnInit();                        //初始化网络
 
-            Util.CallMethod("Game", "OnInitOK");          //初始化完成
+            Util.CallMethod("Game", "InitOK");          //初始化完成
             initialize = true;                          //初始化完 
-
+            /*
             //类对象池测试
             var classObjPool = ObjPoolManager.CreatePool<TestObjectClass>(OnPoolGetElement, OnPoolPushElement);
             //方法1
@@ -271,7 +284,7 @@ namespace LuaFramework {
             var backObj = ObjPoolManager.Get("TestGameObject");
             backObj.transform.SetParent(null);
 
-            Debug.Log("TestGameObject--->>>" + backObj);
+            Debug.Log("TestGameObject--->>>" + backObj);*/
         }
 
         /// <summary>

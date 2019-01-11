@@ -121,6 +121,11 @@ namespace LuaFramework {
             lua.LuaGC(LuaGCOptions.LUA_GCCOLLECT);
         }
 
+        public LuaState GetLuaState()
+        {
+            return lua;
+        }
+
         public void Close() {
             loop.Destroy();
             loop = null;
