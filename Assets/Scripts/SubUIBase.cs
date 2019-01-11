@@ -83,10 +83,12 @@ public class SubUIBase : MonoBehaviour {
 
     public Action OnUIClosed = delegate { }; //关闭时的委托
 
-    public SubUIBase parentUI { get; set; } //父UI
+    
+    public SubUIBase parentUI; //父UI
 
     protected LuaTable self; //自身
-    private WndState state = WndState.Init; //窗口状态
+    [SerializeField]
+    protected WndState state = WndState.Init; //窗口状态
     public UIType type = UIType.SubWnd; //UI类型
     private bool hideState = false;//保存shortHide 之前状态
     private Vector3 initTrans;
@@ -110,7 +112,7 @@ public class SubUIBase : MonoBehaviour {
     }
 
     public virtual void Close()
-    {
+    {            
         if (bdestory)
             Destroy();
         else
@@ -405,6 +407,7 @@ public class SubUIBase : MonoBehaviour {
                 CallLuaFunction(moduleName + ".OnDestroy");
                 luaState = null;
             }
+            CloseAllChild();
             state = WndState.Closed;
             uiMgr.DestroyUI(this);
             if (OnUIClosed != null) OnUIClosed();
@@ -414,6 +417,15 @@ public class SubUIBase : MonoBehaviour {
 
         
     }
+
+    public void CloseAllChild()
+    {
+        CheckList(childUIs);
+        while (childUIs.Count > 0)
+            childUIs[0].Destroy();
+        childStates.Clear();
+    }
+
 
     #endregion
 

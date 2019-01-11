@@ -2,6 +2,9 @@
 UIConfig = {
     UILogin = "Prefabs/UILogin",
     UIMessageBox = "Prefabs/UIMessageBox",
+    UIMainWndFull = "Prefabs/UIMainWndFull",
+    UIModel = "Prefabs/UIModel",
+    UISubWnd = "Prefabs/UISubWnd",
 }
 
 UIType =

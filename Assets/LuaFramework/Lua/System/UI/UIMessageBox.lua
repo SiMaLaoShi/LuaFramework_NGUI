@@ -33,7 +33,7 @@ function UIMessageBox.InitEvent()
 end
 
 function UIMessageBox.CloseClick()
-    UIManager.CreateUISync(UIConfig.UILogin,false)
+    UIManager.CloseUI(uiBase)
 end
 
 function UIMessageBox.Init()

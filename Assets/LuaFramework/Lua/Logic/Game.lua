@@ -12,7 +12,7 @@ local print_r = require "3rd/sproto/print_r"
 
 require "Common/define"
 require "Common/functions"
-require ("Logic.GameDefine")
+require ("Common.GameDefine")
 
 require "Logic/LuaClass"
 require "Logic/CtrlManager"

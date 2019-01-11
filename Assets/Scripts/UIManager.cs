@@ -471,7 +471,6 @@ public class UIManager : Manager
                     //挂起其他窗口
                     SingleList[i].SuspendUI();
                 //Debug.Log("UIName" + uiBase.name);
-                uiBase.ShowUI();
                 HideMainUI();
                 MainWndStates.Clear();
                 foreach (var mainWnd in MainWndList)

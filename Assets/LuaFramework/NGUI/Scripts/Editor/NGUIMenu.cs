@@ -666,8 +666,10 @@ static public class NGUIMenu
 			}
 		}
 	}
-
-	[MenuItem("NGUI/Extras/Align Scene View to UI", false, 10)]
+    /// <summary>
+    /// 快捷键 alt = & , shift = # , ctrl = %
+    /// </summary>
+	[MenuItem("NGUI/Extras/Align Scene View to UI &#%O", false, 10)]
 	static public void AlignSVToUI ()
 	{
 		GameObject go = Selection.activeGameObject ?? UICamera.list[0].gameObject;

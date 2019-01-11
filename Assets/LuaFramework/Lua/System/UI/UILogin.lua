@@ -33,7 +33,7 @@ function UILogin.InitEvent()
 end
 
 function UILogin.OpenClick(go,i)
-    UIManager.CreateUISync(UIConfig.UIMessageBox,false,nil,UIType.Single)
+   UIManager.CreateUISync(UIConfig.UIMainWndFull,false,nil,UIType.MainWnd)
 end
 
 
