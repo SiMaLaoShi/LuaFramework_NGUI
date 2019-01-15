@@ -54,45 +54,52 @@ public class SubUIBase : MonoBehaviour {
         Hiden,
         Closed,
     }
+
     private static UIManager uiMgr;
-    /// <summary> UI锚点 </summary>
+
+    // UI锚点
     public Anchor anchor = Anchor.Center;
-    /// <summary> 关闭ui的时候是否销毁 </summary>
+    // 关闭ui的时候是否销毁
     public bool bdestory = true; 
-
+    // 是否已经加了了lua脚本
     protected bool beSetLuaData;
-    protected bool beStart; //是否调用的Start
-    public bool beUnique = true; //是否是独有的
-    public bool beUseLua = true; //是否使用lua
-    public bool bMainUI = false; //是否是主UI
-
+    // Start 方法是否调用
+    protected bool beStart; 
+    // 在lua中是否是全局变量(静态)
+    public bool beUnique = true; 
+    // 是否使用lua脚本控制
+    public bool beUseLua = true;
+    // 是否是主界面上的UI(头像，聊天框等等)
+    public bool bMainUI = false; 
+    // 全屏
     public bool isFullUI = false;
 
-    private LuaFunction func = null;
-
-    public List<bool> childStates = new List<bool>();
-    public List<SubUIBase> childUIs = new List<SubUIBase>(); //子UI列表
-
-    protected List<LuaBaseRef> funcList = new List<LuaBaseRef>(); //自身的所有方法
-
     public bool isHiedUI = false;
-    protected LuaState luaState;
-    protected string moduleName = string.Empty; //lua中的model名字
 
+    // lua脚本名字
+    protected string moduleName = string.Empty;
+    // 自身Transform组件
     protected Transform myTrans;
 
     public Action OnUIClosed = delegate { }; //关闭时的委托
 
-    
-    public SubUIBase parentUI; //父UI
+    // 依附的ui
+    public SubUIBase parentUI;
+    // 附属ui的状态，显示或者隐藏
+    public List<bool> childStates = new List<bool>();
+    // 附属ui列表
+    public List<SubUIBase> childUIs = new List<SubUIBase>();
 
-    protected LuaTable self; //自身
+    protected LuaTable self;
+    protected LuaState luaState;
+    protected List<LuaBaseRef> funcList = new List<LuaBaseRef>();
+    
     [SerializeField]
     protected WndState state = WndState.Init; //窗口状态
     public UIType type = UIType.SubWnd; //UI类型
-    private bool hideState = false;//保存shortHide 之前状态
     private Vector3 initTrans;
 
+    #region 属性
     public LuaTable table
     {
         get { return self; }
@@ -103,6 +110,9 @@ public class SubUIBase : MonoBehaviour {
         get { return state; }
         set { state = value; }
     }
+
+    #endregion
+
 
     public bool isOneLvUI { get; internal set; }
 
@@ -121,6 +131,7 @@ public class SubUIBase : MonoBehaviour {
 
     public virtual void SetAutoClose()
     {
+
     }
 
     protected virtual void Attach()
@@ -174,13 +185,6 @@ public class SubUIBase : MonoBehaviour {
         }
 
         UnGfx.Attach(root, myTrans);
-    }
-
-    protected virtual void CallLuaFunction(string name)
-    {
-        if (beUseLua == false) return;
-        if (luaState == null || LuaHelper.GetLuaManager() == null) return;
-        luaState.Call(name, false);
     }
 
     public void SetUITexIcon(UITexture tex, string iconPath)
@@ -281,6 +285,18 @@ public class SubUIBase : MonoBehaviour {
         }
     }
 
+    public void AddLuaFunList(LuaFunction func)
+    {
+        funcList.Add(func);
+    }
+
+    protected virtual void CallLuaFunction(string name)
+    {
+        if (beUseLua == false) return;
+        if (luaState == null || LuaHelper.GetLuaManager() == null) return;
+        luaState.Call(name, false);
+    }
+
     private bool InitLua()
     {
         if (!beSetLuaData)
@@ -318,7 +334,8 @@ public class SubUIBase : MonoBehaviour {
     }
     #endregion
 
-    #region SubUIBase 的生命周期
+    #region 窗口的的生命周期
+
     public virtual void ShowUI()
     {
         if (state == WndState.Opened)
@@ -326,16 +343,12 @@ public class SubUIBase : MonoBehaviour {
         gameObject.SetActive(true);
         state = WndState.Opened;
         uiMgr.ShowUI(this);
-        //暂不改动位置
-        //transform.localPosition = Vector3.zero;
         if (parentUI != null)
             if (parentUI.state == WndState.Suspend)
                 SuspendUI();
         if (beUseLua) CallLuaFunction(moduleName + ".ShowUI");
     }
-    /// <summary>
-    ///     挂起窗口，只改变位置不SetActive，需要时自动显示
-    /// </summary>
+
     public virtual bool SuspendUI()
     {
         if (state == WndState.Opened)
@@ -418,6 +431,8 @@ public class SubUIBase : MonoBehaviour {
         
     }
 
+    #endregion
+
     public void CloseAllChild()
     {
         CheckList(childUIs);
@@ -426,8 +441,6 @@ public class SubUIBase : MonoBehaviour {
         childStates.Clear();
     }
 
-
-    #endregion
 
     #region 公用脚本
     private void CheckList<T>(T list) where T : IList, ICollection
@@ -448,12 +461,7 @@ public class SubUIBase : MonoBehaviour {
     }
     #endregion
 
-    #region LuaFunction 操作
-
-    public void AddLuaFunList(LuaFunction func)
-    {
-        funcList.Add(func);
-    }
+    #region 层级管理
 
     protected virtual void AddToList()
     {

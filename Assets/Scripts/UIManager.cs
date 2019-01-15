@@ -10,12 +10,12 @@ public class UIManager : Manager
     private Camera uicam;
     private GameObject uiRoot;
 
+    // 主界面UI(头像，聊天框等等的父节点)
     public GameObject MainUIRoot { get; private set; }
     public SubUIBase CurrentUI { get; private set; }
 
     public void InitUIManager(GameObject uiRoot)
     {
-        Debug.Log("init uimanager");
         Root = uiRoot;
         this.uiRoot = uiRoot.transform.Find("GUI Camera/Root").gameObject;
         MainUIRoot = uiRoot.transform.Find("GUI Camera/MainUIRoot").gameObject;
@@ -26,7 +26,6 @@ public class UIManager : Manager
     {
         if (uicam == null)
             uicam = GameObject.FindGameObjectWithTag(AppConst.GUICAMERA).GetComponent<Camera>();
-
         return uicam;
     }
 
@@ -34,12 +33,12 @@ public class UIManager : Manager
     //供C# 调用
     public T CreateUI<T>(string strPrefab, bool local = false) where T : SubUIBase
     {
-        var obj = LuaFramework.LuaHelper.GetResManager().LoadLocalGameObject(strPrefab);
+        var obj = LuaHelper.GetResManager().LoadLocalGameObject(strPrefab);
         SubUIBase uiBase = UnGfx.GetSafeComponent<T>(obj);
         return uiBase as T;
     }
 
-    #region 创建UI
+    #region 同步创建UI
 
     public SubUIBase CreateUISync(string npath)
     {
@@ -56,50 +55,7 @@ public class UIManager : Manager
         return CreateUISync(npath, bpopUI, parent, 0);
     }
 
-    public void UpdateUIBaseType(SubUIBase uiBase, int type)
-    {
-        if (uiBase == null)
-        {
-            Debug.Log("uiBase为空");
-            return;
-        }
-
-        switch (type)
-        {
-            case 1:
-                uiBase.ChangeUIType(UIType.MainWnd);
-                break;
-            case 2:
-                uiBase.ChangeUIType(UIType.SubWnd);
-                break;
-            case 3:
-                uiBase.ChangeUIType(UIType.Modal);
-                break;
-            case 4:
-                uiBase.ChangeUIType(UIType.Tips);
-                break;
-            case 5:
-                uiBase.ChangeUIType(UIType.SingleTips);
-                break;
-            case 6:
-                uiBase.ChangeUIType(UIType.TopTips);
-                break;
-            case 7:
-                uiBase.ChangeUIType(UIType.UIItem);
-                break;
-            default:
-                break;
-        }
-    }
-
-    /// <summary>
-    ///     同步创建一个UI
-    /// </summary>
-    /// <param name="npath"></param>
-    /// <param name="bpopUI">是否关闭上一个UI</param>
-    /// <param name="parentUI">是否附属于父UI，</param>
-    /// <returns></returns>
-    public SubUIBase CreateUISync(string npath, bool bpopUI, SubUIBase parentUI, int nType )
+    public SubUIBase CreateUISync(string npath, bool bpopUI, SubUIBase parentUI, int nType)
     {
         var name = GetFileName(npath);
         SubUIBase ui = null;
@@ -140,6 +96,68 @@ public class UIManager : Manager
         }
         return null;
     }
+
+    #endregion
+
+    #region Common
+
+    private void CreateUIImpl(Object assest, LuaFunction func, bool bpopUI = false, SubUIBase parentUI = null)
+    {
+        if (assest == null)
+            return;
+
+        var obj = UnGfx.Instantiate(assest);
+
+        var ui = UnGfx.GetSafeComponent<SubUIBase>(obj);
+        InitUIByType(ui, parentUI, bpopUI);
+        if (func != null)
+        {
+            func.Call(ui);
+            ui.AddLuaFunList(func);
+        }
+    }
+
+    public void UpdateUIBaseType(SubUIBase uiBase, int type)
+    {
+        if (uiBase == null)
+        {
+            Debug.Log("uiBase为空");
+            return;
+        }
+
+        switch (type)
+        {
+            case 1:
+                uiBase.ChangeUIType(UIType.MainWnd);
+                break;
+            case 2:
+                uiBase.ChangeUIType(UIType.SubWnd);
+                break;
+            case 3:
+                uiBase.ChangeUIType(UIType.Modal);
+                break;
+            case 4:
+                uiBase.ChangeUIType(UIType.Tips);
+                break;
+            case 5:
+                uiBase.ChangeUIType(UIType.SingleTips);
+                break;
+            case 6:
+                uiBase.ChangeUIType(UIType.TopTips);
+                break;
+            case 7:
+                uiBase.ChangeUIType(UIType.UIItem);
+                break;
+            default:
+                break;
+        }
+    }
+
+    #endregion
+
+
+    #region 异步创建UI
+
 
     public void CreateUI(string npath, LuaFunction func)
     {
@@ -221,23 +239,6 @@ public class UIManager : Manager
         ResourceManager.LoadResCallback callBack = assest => { CreateUIImpl(assest, func, bpopUI, parentUI); };
         ResManager.LoadResourceAsync(npath, callBack, priority);
     }
-
-    private void CreateUIImpl(Object assest, LuaFunction func, bool bpopUI = false, SubUIBase parentUI = null)
-    {
-        if (assest == null)
-            return;
-
-        var obj = UnGfx.Instantiate(assest);
-
-        var ui = UnGfx.GetSafeComponent<SubUIBase>(obj);
-        InitUIByType(ui, parentUI, bpopUI);
-        if (func != null)
-        {
-            func.Call(ui);
-            ui.AddLuaFunList(func);
-        }
-    }
-
     #endregion
 
     #region Manager
@@ -444,6 +445,8 @@ public class UIManager : Manager
     {
     }
 
+    #region 窗口的逻辑控制
+
     public void ShowUI(SubUIBase uiBase)
     {
         //Debug.Log("name" + uiBase.gameObject.name);
@@ -500,14 +503,6 @@ public class UIManager : Manager
                 HideMainUI();
                 break;
             case UIType.TopTips:
-                /*if (MainWndList.Count > 0)
-                    MainWndList[MainWndList.Count - 1].HideUI();
-                if (SingleList.Count > 0)
-                    SingleList[SingleList.Count - 1].HideUI();
-                if (SingleTipList.Count > 0)
-                    SingleTipList[SingleTipList.Count - 1].HideUI();
-                for (var i = 0; i < TipsList.Count; i++) TipsList[i].HideUI();*/
-
                 uiBase.GetComponent<UIPanel>().depth = 2000 + TopTipsList.Count * 5;
                 uiBase.GetComponent<UIPanel>().sortingOrder = 3;
                 break;
@@ -542,14 +537,6 @@ public class UIManager : Manager
 
                 break;
             case UIType.SubWnd:
-
-                //uiBase.childStates.Clear();
-                //for (int i = 0; i < uiBase.childUIs.Count; i++)
-                //{
-                //    uiBase.childStates.Add(uiBase.childUIs[i].gameObject.activeSelf);
-                //    uiBase.childUIs[i].HideUI();
-                //}
-
                 break;
             case UIType.Modal:
                 uiBase.childStates.Clear();
@@ -707,6 +694,9 @@ public class UIManager : Manager
         }
     }
 
+    #endregion
+
+
     /// <summary>
     ///     切换场景调用
     /// </summary>
@@ -743,14 +733,6 @@ public class UIManager : Manager
     public void ClearAllUI()
     {
         var count = UIList.Count;
-        //for (int i = 0; i < count; i++)
-        //{
-        //    SubUIBase ui = UIList[i];
-        //    ui.Destroy();
-        //    i = i - (count - UIList.Count);
-        //    if (i < -1) i = -1;
-        //    count = UIList.Count;
-        //}
         while (UIList.Count > 0) UIList[0].Destroy();
 
         foreach (var item in hidenUIDic)
@@ -781,7 +763,6 @@ public class UIManager : Manager
 
     public bool GetWndIsOpen()
     {
-        //Debug.Log("singelist:" + SingleList.Count + "\nSubWndList:" + SubWndList.Count);
         return SingleList.Count > 0;
     }
 
@@ -800,13 +781,11 @@ public class UIManager : Manager
     private void HideMainUI()
     {
         MainUIRoot.transform.position = new Vector3(0f, 0f, 100000f);
-        //LuaHelper.BPCallFunction("UIManager", "MonitorMainUIChange", 0);
     }
 
     private void ShowMainUI()
     {
         MainUIRoot.transform.position = new Vector3(0f, 0f, 0f);
-        //LuaHelper.BPCallFunction("UIManager", "MonitorMainUIChange", 1);
     }
 
     #endregion

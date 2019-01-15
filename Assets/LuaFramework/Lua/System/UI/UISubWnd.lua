@@ -25,15 +25,19 @@ function UISubWnd.Start()
 end
 
 function UISubWnd.InitWidget()
-    --this.btnOpen = transform:Find("Button")
+    this.btnClose = transform:Find("Window/Button - Exit")
 end
 
 function UISubWnd.InitEvent()
-    --uiBase:AddOnClickListener(this.btnOpen,this.OpenClick,0)
+    uiBase:AddOnClickListener(this.btnClose,this.CloseClick,0)
 end
 
 function UISubWnd.OpenClick(go,i)
     UIManager.CreateUISync(UIConfig.UIMessageBox)
+end
+
+function UISubWnd.CloseClick(go,i)
+    UIManager.CloseUI(uiBase)
 end
 
 function UISubWnd.Init()
