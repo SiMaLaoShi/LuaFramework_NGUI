@@ -6,7 +6,7 @@
 ------------------------------------------------------
 
 local gameObject, transform, this, uiBase
-
+local ActorFashionTable = require("Table.ActorFashionTable")
 UIMainWndFull = {}
 
 function UIMainWndFull.Awake()
@@ -18,6 +18,11 @@ function UIMainWndFull.Awake()
     this.InitWidget()
     this.InitEvent()
     this.Init()
+
+end
+
+function UIMainWndFull.Update()
+
 end
 
 function UIMainWndFull.Start()

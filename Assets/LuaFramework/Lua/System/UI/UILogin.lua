@@ -6,7 +6,7 @@
 ------------------------------------------------------
 
 local gameObject, transform, this, uiBase
-
+local ActorFashionTable = require("Table.ActorFashionTable")
 UILogin = {}
 
 function UILogin.Awake()

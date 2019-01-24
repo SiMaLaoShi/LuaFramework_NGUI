@@ -67,8 +67,11 @@ public class LuaUIEventListener : MonoBehaviour
     private void OnDestroy()
     {
         Clear();
+        Debug.Log("OnDestroy" + name);
         LuaUIEventListener listener = GetComponent<LuaUIEventListener>();
         if (listener != null) Destroy(listener);
+
+        
     }
 
     public void Clear()
